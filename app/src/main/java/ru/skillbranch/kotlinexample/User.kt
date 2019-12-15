@@ -27,7 +27,7 @@ class User private constructor(
     private var _login: String? = null
     internal var login: String
         set(value) {
-            _login = value?.toLowerCase()
+            _login = value.toLowerCase()
         }
         get() = _login!!
 
@@ -52,6 +52,19 @@ class User private constructor(
         passwordHash = encrypt(password)
     }
 
+    //for import
+    constructor(
+        firstName: String,
+        lastName: String?,
+        email: String,
+        passHash: String,
+        salt: String? = null
+    ):this(firstName, lastName, email = email, meta = mapOf("src" to "csv")){
+        println("Secondary import constructor")
+        _salt = salt
+        passwordHash = passHash
+    }
+
     //for phone
     constructor(
         firstName: String,
@@ -65,18 +78,7 @@ class User private constructor(
         sendAccessCodeToUser(phone, code)
     }
 
-    //for import
-    constructor(
-        firstName: String,
-        lastName: String?,
-        email: String,
-        password: String,
-        salt: String? = null
-    ):this(firstName, lastName, email = email, meta = mapOf("src" to "csv")){
-        println("Secondary import constructor")
-        _salt = salt
-        passwordHash = encrypt(password)
-    }
+
 
     init {
         println("First init block")
@@ -154,7 +156,8 @@ class User private constructor(
             val (firstName, lastName) = fullName.fullNameToPair()
             return when{
                 !phon.isNullOrBlank() -> { User(firstName, lastName, phon) }
-                !email.isNullOrBlank() && !password.isNullOrBlank() -> User(firstName, lastName, email, password, salt)
+                !email.isNullOrBlank() && !password.isNullOrBlank() && !salt.isNullOrBlank() -> User(firstName, lastName, email, password, salt)
+                !email.isNullOrBlank() && !password.isNullOrBlank() && salt.isNullOrBlank() -> User(firstName, lastName, email, password)
                 else -> throw IllegalAccessException("Email or phone must be not null or blank")
             }
 

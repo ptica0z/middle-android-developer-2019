@@ -11,7 +11,7 @@ object UserHolder {
         email: String,
         password: String
     ): User{
-        return User.makeUser(fullName, email, password)
+        return User.makeUser(fullName, email, password = password)
             .also {
                 if(map.get(it.login) != null) throw IllegalArgumentException("A user with this email already exists")
                 map[it.login] = it
