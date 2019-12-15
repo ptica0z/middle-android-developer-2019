@@ -1,4 +1,4 @@
-package ru.skillbranch.kotlinexample.extentions
+package ru.skillbranch.kotlinexample.extensions
 
 fun <T> List<T>.dropLastUntil(predicate: (T) -> Boolean): List<T>{
     var result = mutableListOf<T>()
