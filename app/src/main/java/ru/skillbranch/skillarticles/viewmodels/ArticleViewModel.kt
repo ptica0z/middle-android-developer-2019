@@ -10,12 +10,10 @@ import ru.skillbranch.skillarticles.extensions.data.toAppSettings
 import ru.skillbranch.skillarticles.extensions.data.toArticlePersonalInfo
 import ru.skillbranch.skillarticles.extensions.format
 
-class ArticleViewModel(private val articleId : String) : IArticleViewModel, BaseViewModel<ArticleState>(ArticleState()),
-    Parcelable {
+class ArticleViewModel(private val articleId : String) : IArticleViewModel
+    , BaseViewModel<ArticleState>(ArticleState()) {
     private val repository = ArticleRepository
-
-    constructor(parcel: Parcel) : this(parcel.readString()) {
-    }
+    private var menuIsShown : Boolean = false
 
     init {
         subscribeOnDataSource(getArticleData()){ article, state ->
@@ -108,29 +106,9 @@ class ArticleViewModel(private val articleId : String) : IArticleViewModel, Base
     }
 
     override fun handleToggleMenu() {
-        updateState { it.copy(isShowMenu = !it.isShowMenu) }
-    }
-
-    init {
-
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(articleId)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<ArticleViewModel> {
-        override fun createFromParcel(parcel: Parcel): ArticleViewModel {
-            return ArticleViewModel(parcel)
-        }
-
-        override fun newArray(size: Int): Array<ArticleViewModel?> {
-            return arrayOfNulls(size)
-        }
+        updateState { state ->
+            state.copy(isShowMenu = !state.isShowMenu)
+            .also { menuIsShown = !state.isShowMenu } }
     }
 }
 
