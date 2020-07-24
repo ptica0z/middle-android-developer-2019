@@ -12,6 +12,7 @@ import ru.skillbranch.skillarticles.extensions.format
 
 class ArticleViewModel(private val articleId : String) : IArticleViewModel
     , BaseViewModel<ArticleState>(ArticleState()) {
+
     private val repository = ArticleRepository
     private var menuIsShown : Boolean = false
 
@@ -21,6 +22,7 @@ class ArticleViewModel(private val articleId : String) : IArticleViewModel
             state.copy(
                 shareLink = article.shareLink,
                 title = article.title,
+                author = article.author,
                 category = article.category,
                 categoryIcon = article.categoryIcon,
                 date = article.date.format()
@@ -52,15 +54,15 @@ class ArticleViewModel(private val articleId : String) : IArticleViewModel
         }
     }
 
-    private fun getArticleContent() : LiveData<List<Any>?>{
+    override fun getArticleContent() : LiveData<List<Any>?>{
         return repository.loadArticleContent(articleId)
     }
 
-    private fun getArticleData() : LiveData<ArticleData?>{
+    override fun getArticleData() : LiveData<ArticleData?>{
         return repository.getArticle(articleId)
     }
 
-    private fun getArticlePersonalInfo() : LiveData<ArticlePersonalInfo?>{
+    override fun getArticlePersonalInfo() : LiveData<ArticlePersonalInfo?>{
         return repository.loadArticlePersonalInfo(articleId)
     }
 
@@ -78,6 +80,7 @@ class ArticleViewModel(private val articleId : String) : IArticleViewModel
     }
 
     override fun handleLike() {
+        val isLike = currentState.isLike
         val toggleLike = {
             val info = currentState.toArticlePersonalInfo()
             repository.updateArticlePersonalInfo(info.copy(isLike = !info.isLike))
@@ -85,7 +88,7 @@ class ArticleViewModel(private val articleId : String) : IArticleViewModel
 
         toggleLike()
 
-        val msg = if(currentState.isLike) Notify.TextMessage("Mark is liked")
+        val msg = if(!isLike) Notify.TextMessage("Mark is liked")
         else{
             Notify.ActionMessage(
                 "Don`t like it anymore",
@@ -97,6 +100,11 @@ class ArticleViewModel(private val articleId : String) : IArticleViewModel
     }
 
     override fun handleBookmark() {
+        val info = currentState.toArticlePersonalInfo()
+        repository.updateArticlePersonalInfo(info.copy(isBookmark = !info.isBookmark))
+
+        val msg = if(currentState.isBookmark) "Add to bookmarks" else "Remove from bookmarks"
+        notify(Notify.TextMessage(msg))
 
     }
 
@@ -109,6 +117,14 @@ class ArticleViewModel(private val articleId : String) : IArticleViewModel
         updateState { state ->
             state.copy(isShowMenu = !state.isShowMenu)
             .also { menuIsShown = !state.isShowMenu } }
+    }
+
+    override fun handleSearchMode(isSearch: Boolean) {
+
+    }
+
+    override fun handleSearch(query: String?) {
+
     }
 }
 

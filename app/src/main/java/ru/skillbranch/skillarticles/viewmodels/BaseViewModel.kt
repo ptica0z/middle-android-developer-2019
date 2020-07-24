@@ -2,18 +2,23 @@ package ru.skillbranch.skillarticles.viewmodels
 
 import android.widget.Toolbar
 import androidx.annotation.UiThread
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
 import java.lang.IllegalArgumentException
 
 abstract class BaseViewModel<T>(initState : T) : ViewModel(){
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     val notifications = MutableLiveData<Event<Notify>>()
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     val state : MediatorLiveData<T> = MediatorLiveData<T>().apply{
         value = initState
     }
 
     // not null current state
-    protected val currentState
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    val currentState
         get() = state.value!!
 
     //лямбда выражение принимает в качестве аргумента лямбду в которую передаётся текущее состояние
