@@ -46,6 +46,7 @@ class RootActivity : AppCompatActivity() {
         viewModel.observeNotifications(this){
             renderNotification(it)
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
